@@ -44,9 +44,8 @@ module.exports = {
     ),
   execute: async ({ client, interaction }) => {
     let embed = new EmbedBuilder();
-
+    await interaction.deferReply();
     if (!interaction.member.voice.channel) {
-      await interaction.deferReply();
       embed
         .setTitle("DJ Titico não foi convidado pra festa :(")
         .setDescription(
@@ -72,7 +71,6 @@ module.exports = {
       });
 
       if (result.tracks.length === 0) {
-        await interaction.deferReply();
         embed
           .setTitle("DJ Titico não achou essa musica :(")
           .setDescription("Não achei essa música, tenta denovo ai!")
@@ -107,7 +105,6 @@ module.exports = {
       });
 
       if (result.tracks.length === 0) {
-        await interaction.deferReply();
         embed
           .setTitle("DJ Titico não achou essa playlist :(")
           .setDescription("Não achei essa playlist, tenta denovo ai!")
@@ -138,7 +135,6 @@ module.exports = {
       const queue = client.player.getQueue(interaction.guildId);
 
       if (!queue || !queue.playing) {
-        await interaction.deferReply();
         embed
           .setTitle("DJ Titico ta sem serviço")
           .setDescription("Não tem nenhuma música na fila.")
@@ -157,7 +153,6 @@ module.exports = {
 
       const currentSong = queue.current;
 
-      await interaction.deferReply();
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
@@ -179,7 +174,6 @@ module.exports = {
       const queue = client.player.getQueue(interaction.guildId);
 
       if (!queue || !queue.playing || queue.tracks.length === 0) {
-        await interaction.deferReply();
         embed
           .setTitle("DJ Titico ta sem serviço")
           .setDescription("Não tem nenhuma música na fila.")
@@ -203,7 +197,6 @@ module.exports = {
 
       queue.destroy();
 
-      await interaction.deferReply();
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
@@ -218,7 +211,6 @@ module.exports = {
       const queue = client.player.getQueue(interaction.guildId);
 
       if (!queue || !queue.playing) {
-        await interaction.deferReply();
         embed
           .setTitle("DJ Titico ta sem serviço")
           .setDescription("Não tem nenhuma música na fila.")
@@ -234,7 +226,6 @@ module.exports = {
           currentSong.title.replace(currentSong.author, "").replace(regEx, "")
         )) || "Letra não encontrada :(";
 
-      await interaction.deferReply();
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
@@ -249,7 +240,6 @@ module.exports = {
     }
 
     if (!queue.playing) await queue.play();
-    await interaction.deferReply();
     await interaction.editReply({
       embeds: [embed],
     });
