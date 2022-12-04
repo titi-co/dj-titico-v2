@@ -92,9 +92,9 @@ module.exports = {
           { name: "Autor", value: song.author, inline: true },
         ])
         .setThumbnail(song.thumbnail)
-        .setColor([109, 103, 228])
+        .setColor([88, 101, 242])
         .setFooter({
-          text: `Pedida por: <@${interaction.member.nickname}>`,
+          text: `Pedida por: ${interaction.member.nickname}`,
           iconURL: `https://cdn.discordapp.com/avatars/${song.requestedBy.id}/${song.requestedBy.avatar}.png?size=256`,
         });
     } else if (interaction.options.getSubcommand() === "playlist") {
@@ -126,7 +126,7 @@ module.exports = {
           },
         ])
         .setThumbnail(playlist.thumbnail)
-        .setColor([109, 103, 228])
+        .setColor([88, 101, 242])
         .setFooter({
           text: `Pedida por: ${interaction.member.nickname}`,
           iconURL: `https://cdn.discordapp.com/avatars/${result.tracks[0].requestedBy.id}/${result.tracks[0].requestedBy.avatar}.png?size=256`,
@@ -145,7 +145,7 @@ module.exports = {
       const queueString = queue.tracks
         .slice(0, 10)
         .map((song, i) => {
-          return `**${i + 1})** [${song.duration}]\` ${song.title} - <@${
+          return `**${i + 1})** \`[${song.duration}]\` ${song.title} - <@${
             song.requestedBy.id
           }>`;
         })
@@ -156,16 +156,16 @@ module.exports = {
       await interaction.reply({
         embeds: [
           new EmbedBuilder()
-            .setTitle("A playlist do DJ Titico")
+            .setTitle("Playlist do DJ Titico")
             .setDescription(
               `**Tocando agora**\n` +
                 (currentSong
                   ? `\`[${currentSong.duration}]\` ${currentSong.title} - <@${currentSong.requestedBy.id}>`
-                  : "None") +
-                `\n\n**Queue**\n${queueString}`
+                  : "None")
             )
             .setColor([251, 37, 118])
-            .setThumbnail(currentSong.thumbnail),
+            .setThumbnail(currentSong.thumbnail)
+            .setFields([{ name: "Queue", value: queueString }]),
         ],
       });
 
@@ -173,7 +173,7 @@ module.exports = {
     } else if (interaction.options.getSubcommand() === "skip") {
       const queue = client.player.getQueue(interaction.guildId);
 
-      if (!queue || !queue.playing) {
+      if (!queue || !queue.playing || queue.tracks.length === 0) {
         embed
           .setTitle("DJ Titico ta sem serviço")
           .setDescription("Não tem nenhuma música na fila.")
@@ -185,19 +185,13 @@ module.exports = {
 
       queue.skip();
 
-      await interaction.reply({
-        embeds: [
-          new EmbedBuilder()
-            .setTitle("DJ Titico pulou uma musica")
-            .setDescription(
-              `${currentSong.title} - <@${currentSong.requestedBy.id}>`
-            )
-            .setColor([251, 37, 118])
-            .setThumbnail(currentSong.thumbnail),
-        ],
-      });
-
-      return;
+      embed
+        .setTitle("DJ Titico pulou uma musica")
+        .setDescription(
+          `${currentSong.title} - <@${currentSong.requestedBy.id}>`
+        )
+        .setColor([251, 37, 118])
+        .setThumbnail(currentSong.thumbnail);
     } else if (interaction.options.getSubcommand() === "fuckoff") {
       const queue = client.player.getQueue(interaction.guildId);
 
@@ -208,8 +202,7 @@ module.exports = {
           new EmbedBuilder()
             .setTitle("DJ Titico foi expulso :/")
             .setDescription("Vishkkkkkk, me expulsaram.")
-            .setColor([220, 53, 53])
-            .setThumbnail(currentSong.thumbnail),
+            .setColor([220, 53, 53]),
         ],
       });
 
