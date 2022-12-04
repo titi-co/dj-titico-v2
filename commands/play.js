@@ -46,13 +46,14 @@ module.exports = {
     let embed = new EmbedBuilder();
 
     if (!interaction.member.voice.channel) {
+      await interaction.deferReply();
       embed
         .setTitle("DJ Titico não foi convidado pra festa :(")
         .setDescription(
           "O DJ Titico tem que estar em um canal pra tocar musica ou fazer algo. Convida ele pra festa!"
         )
         .setColor([220, 53, 53]);
-      return interaction.reply({ embeds: [embed] });
+      return interaction.editReply({ embeds: [embed] });
     }
 
     const queue = await client.player.createQueue(interaction.guild, {
@@ -71,11 +72,12 @@ module.exports = {
       });
 
       if (result.tracks.length === 0) {
+        await interaction.deferReply();
         embed
           .setTitle("DJ Titico não achou essa musica :(")
           .setDescription("Não achei essa música, tenta denovo ai!")
           .setColor([244, 157, 26]);
-        return interaction.reply({ embeds: [embed] });
+        return interaction.editReply({ embeds: [embed] });
       }
 
       const song = result.tracks[0];
@@ -105,11 +107,12 @@ module.exports = {
       });
 
       if (result.tracks.length === 0) {
+        await interaction.deferReply();
         embed
           .setTitle("DJ Titico não achou essa playlist :(")
           .setDescription("Não achei essa playlist, tenta denovo ai!")
           .setColor([244, 157, 26]);
-        return interaction.reply({ embeds: [embed] });
+        return interaction.editReply({ embeds: [embed] });
       }
 
       const playlist = result.playlist;
@@ -135,11 +138,12 @@ module.exports = {
       const queue = client.player.getQueue(interaction.guildId);
 
       if (!queue || !queue.playing) {
+        await interaction.deferReply();
         embed
           .setTitle("DJ Titico ta sem serviço")
           .setDescription("Não tem nenhuma música na fila.")
           .setColor([255, 211, 114]);
-        return interaction.reply({ embeds: [embed] });
+        return interaction.editReply({ embeds: [embed] });
       }
 
       const queueString = queue.tracks
@@ -153,7 +157,8 @@ module.exports = {
 
       const currentSong = queue.current;
 
-      await interaction.reply({
+      await interaction.deferReply();
+      await interaction.editReply({
         embeds: [
           new EmbedBuilder()
             .setTitle("Playlist do DJ Titico")
@@ -174,11 +179,12 @@ module.exports = {
       const queue = client.player.getQueue(interaction.guildId);
 
       if (!queue || !queue.playing || queue.tracks.length === 0) {
+        await interaction.deferReply();
         embed
           .setTitle("DJ Titico ta sem serviço")
           .setDescription("Não tem nenhuma música na fila.")
           .setColor([255, 211, 114]);
-        return interaction.reply({ embeds: [embed] });
+        return interaction.editReply({ embeds: [embed] });
       }
 
       const currentSong = queue.current;
@@ -197,7 +203,8 @@ module.exports = {
 
       queue.destroy();
 
-      await interaction.reply({
+      await interaction.deferReply();
+      await interaction.editReply({
         embeds: [
           new EmbedBuilder()
             .setTitle("DJ Titico foi expulso :/")
@@ -211,11 +218,12 @@ module.exports = {
       const queue = client.player.getQueue(interaction.guildId);
 
       if (!queue || !queue.playing) {
+        await interaction.deferReply();
         embed
           .setTitle("DJ Titico ta sem serviço")
           .setDescription("Não tem nenhuma música na fila.")
           .setColor([255, 211, 114]);
-        return interaction.reply({ embeds: [embed] });
+        return interaction.editReply({ embeds: [embed] });
       }
 
       const currentSong = queue.current;
@@ -226,7 +234,8 @@ module.exports = {
           currentSong.title.replace(currentSong.author, "").replace(regEx, "")
         )) || "Letra não encontrada :(";
 
-      await interaction.reply({
+      await interaction.deferReply();
+      await interaction.editReply({
         embeds: [
           new EmbedBuilder()
             .setTitle(currentSong.title)
@@ -240,7 +249,8 @@ module.exports = {
     }
 
     if (!queue.playing) await queue.play();
-    await interaction.reply({
+    await interaction.deferReply();
+    await interaction.editReply({
       embeds: [embed],
     });
   },

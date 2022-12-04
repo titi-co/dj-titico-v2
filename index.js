@@ -122,6 +122,7 @@ client.on("interactionCreate", async (interaction) => {
     try {
       await command.execute({ client, interaction });
     } catch (error) {
+      await interaction.deferReply();
       console.error(error);
 
       let embed = new EmbedBuilder();
@@ -132,7 +133,7 @@ client.on("interactionCreate", async (interaction) => {
         )
         .setThumbnail("attachment://error.gif")
         .setColor([220, 53, 53]);
-      await interaction.reply({
+      await interaction.editReply({
         embeds: [embed],
         files: ["./error.gif"],
       });
@@ -142,11 +143,12 @@ client.on("interactionCreate", async (interaction) => {
     const currentSong = queue.current;
 
     if (!queue || !queue.playing) {
+      await interaction.deferReply();
       embed
         .setTitle("DJ Titico ta sem serviço")
         .setDescription("Não tem nenhuma música na fila.")
         .setColor([255, 211, 114]);
-      return interaction.reply({ embeds: [embed] });
+      return interaction.editReply({ embeds: [embed] });
     }
 
     if (interaction.customId === "pause") {
