@@ -18,6 +18,7 @@ const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildVoiceStates,
   ],
 });
@@ -47,7 +48,6 @@ client.player = new Player(client, {
 });
 
 client.on("ready", () => {
-  // Get all ids of the servers
   const guild_ids = client.guilds.cache.map((guild) => guild.id);
 
   const rest = new REST({ version: "9" }).setToken(process.env.TOKEN);
@@ -57,10 +57,26 @@ client.on("ready", () => {
         body: commands,
       })
       .then(() =>
-        console.log("Successfully updated commands for guild " + guildId)
+        console.log("Comandos atualizados com sucesso para a guild " + guildId)
       )
       .catch(console.error);
   }
+});
+
+const prefix = ">";
+client.on("messageCreate", async (message) => {
+  if (message.author.bot || !message.content.startsWith(prefix)) return;
+
+  let embed = new EmbedBuilder();
+
+  embed
+    .setTitle("Opa... acho que você errou 🫢")
+    .setDescription(
+      "Parece que você tentou me chamar, mas usou o comando errado!\n\nEu atualizei e agora respondo apenas por **SlashCommands**\nPara me usar, digite **/djtitico** e escolha algum dos métodos que eu te sugerir.\n\n É facil! Bora, me chama pra festa!"
+    )
+    .setColor([251, 37, 118]);
+
+  return message.channel.send({ embeds: [embed] });
 });
 
 let row = new ActionRowBuilder();
@@ -110,7 +126,7 @@ client.on("interactionCreate", async (interaction) => {
 
       let embed = new EmbedBuilder();
       embed
-        .setTitle("DJ Titico parou de funfar :(")
+        .setTitle("DJ Titico parou de funfar")
         .setDescription(
           "Caso o problema persista, contate Titico para solução."
         )
@@ -138,20 +154,25 @@ client.on("interactionCreate", async (interaction) => {
       row.components[1].setDisabled(true);
 
       queue.setPaused(true);
+
+      await interaction.update({ components: [row] });
     } else if (interaction.customId === "resume") {
       row.components[0].setDisabled(true);
       row.components[1].setDisabled(false);
 
       queue.setPaused(false);
+
+      await interaction.update({ components: [row] });
     } else if (interaction.customId === "lyrics") {
+      await interaction.deferReply();
       let regEx = new RegExp("\\[.*\\]|\\(.*?\\)", "g");
       let lyrics =
         (await lyricsFinder(
           currentSong.author,
           currentSong.title.replace(currentSong.author, "").replace(regEx, "")
-        )) || "Letra não encontrada :(";
+        )) || "Letra não encontrada.";
 
-      await interaction.reply({
+      await interaction.editReply({
         embeds: [
           new EmbedBuilder()
             .setTitle(currentSong.title)
@@ -163,8 +184,6 @@ client.on("interactionCreate", async (interaction) => {
 
       return;
     }
-
-    await interaction.update({ components: [row] });
   }
 });
 
